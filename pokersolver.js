@@ -8,7 +8,8 @@
   'use strict';
 
   // NOTE: The 'joker' will be denoted with a value of 'O' and any suit.
-  var values = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
+  // var values = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
+  var values = ['3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A', '2'];
 
   /**
    * Base Card class that defines a single card.
@@ -56,10 +57,10 @@
       if (canDisqualify && this.game.lowestQualified) {
         this.alwaysQualifies = false;
       }
-      
+
       // Get rank based on game.
       var handRank = this.game.handValues.length;
-      for (var i=0; i<this.game.handValues.length; i++) {
+      for (var i = 0; i < this.game.handValues.length; i++) {
         if (this.game.handValues[i] === this.constructor) {
           break;
         }
@@ -68,11 +69,11 @@
 
       // Set up the pool of cards.
       this.cardPool = cards.map(function(c) {
-        return (typeof c === 'string') ? new Card(c) : c;
+        return typeof c === 'string' ? new Card(c) : c;
       });
 
       // Fix the card ranks for wild cards, and sort.
-      for (var i=0; i<this.cardPool.length; i++) {
+      for (var i = 0; i < this.cardPool.length; i++) {
         card = this.cardPool[i];
         if (card.value === this.game.wildValue) {
           card.rank = -1;
@@ -82,7 +83,7 @@
 
       // Create the arrays of suits and values.
       var obj, obj1, key, key1, card;
-      for (var i=0; i<this.cardPool.length; i++) {
+      for (var i = 0; i < this.cardPool.length; i++) {
         // Make sure this value already exists in the object.
         card = this.cardPool[i];
 
@@ -90,8 +91,8 @@
         if (card.rank === -1) {
           this.wilds.push(card);
         } else {
-          (obj = this.suits)[key = card.suit] || (obj[key] = []);
-          (obj1 = this.values)[key1 = card.rank] || (obj1[key1] = []);
+          (obj = this.suits)[(key = card.suit)] || (obj[key] = []);
+          (obj1 = this.values)[(key1 = card.rank)] || (obj1[key1] = []);
 
           // Add the value to the array for that type in the object.
           this.suits[card.suit].push(card);
@@ -116,7 +117,7 @@
       }
 
       var result = 0;
-      for (var i=0; i<=4; i++) {
+      for (var i = 0; i <= 4; i++) {
         if (this.cards[i] && a.cards[i] && this.cards[i].rank < a.cards[i].rank) {
           result = 1;
           break;
@@ -135,7 +136,7 @@
      * @return {Boolean}
      */
     loseTo(hand) {
-      return (this.compare(hand) > 0);
+      return this.compare(hand) > 0;
     }
 
     /**
@@ -145,9 +146,9 @@
      */
     getNumCardsByRank(val) {
       var cards = this.values[val];
-      var checkCardsLength = (cards) ? cards.length : 0;
+      var checkCardsLength = cards ? cards.length : 0;
 
-      for (var i=0; i<this.wilds.length; i++) {
+      for (var i = 0; i < this.wilds.length; i++) {
         if (this.wilds[i].rank > -1) {
           continue;
         } else if (cards) {
@@ -171,19 +172,19 @@
     getCardsForFlush(suit, setRanks) {
       var cards = (this.suits[suit] || []).sort(Card.sort);
 
-      for (var i=0; i<this.wilds.length; i++) {
+      for (var i = 0; i < this.wilds.length; i++) {
         var wild = this.wilds[i];
 
         if (setRanks) {
-          var j=0;
-          while (j<values.length && j<cards.length) {
-            if (cards[j].rank === values.length-1-j) {
+          var j = 0;
+          while (j < values.length && j < cards.length) {
+            if (cards[j].rank === values.length - 1 - j) {
               j += 1;
             } else {
               break;
             }
           }
-          wild.rank = values.length-1-j;
+          wild.rank = values.length - 1 - j;
           wild.wildValue = values[wild.rank];
         }
 
@@ -198,7 +199,7 @@
      * Resets the rank and wild values of the wild cards.
      */
     resetWildCards() {
-      for (var i=0; i<this.wilds.length; i++) {
+      for (var i = 0; i < this.wilds.length; i++) {
         this.wilds[i].rank = -1;
         this.wilds[i].wildValue = this.wilds[i].value;
       }
@@ -221,7 +222,7 @@
 
       // Account for remaining wild card when it must be ace.
       if (this.game.wildStatus === 0) {
-        for (var i=0; i<picks.length; i++) {
+        for (var i = 0; i < picks.length; i++) {
           var card = picks[i];
           if (card.rank === -1) {
             card.wildValue = 'A';
@@ -267,7 +268,7 @@
         return true;
       }
 
-      return (this.compare(Hand.solve(this.game.lowestQualified, this.game)) <= 0);
+      return this.compare(Hand.solve(this.game.lowestQualified, this.game)) <= 0;
     }
 
     /**
@@ -280,9 +281,12 @@
         return h.qualifiesHigh();
       });
 
-      var highestRank = Math.max.apply(Math, hands.map(function(h) {
-        return h.rank;
-      }));
+      var highestRank = Math.max.apply(
+        Math,
+        hands.map(function(h) {
+          return h.rank;
+        })
+      );
 
       hands = hands.filter(function(h) {
         return h.rank === highestRank;
@@ -290,7 +294,7 @@
 
       hands = hands.filter(function(h) {
         var lose = false;
-        for (var i=0; i<hands.length; i++) {
+        for (var i = 0; i < hands.length; i++) {
           lose = h.loseTo(hands[i]);
           if (lose) {
             break;
@@ -312,13 +316,13 @@
      */
     static solve(cards, game, canDisqualify) {
       game = game || 'standard';
-      game = (typeof game === 'string') ? new Game(game) : game;
+      game = typeof game === 'string' ? new Game(game) : game;
       cards = cards || [''];
 
       var hands = game.handValues;
       var result = null;
 
-      for (var i=0; i<hands.length; i++) {
+      for (var i = 0; i < hands.length; i++) {
         result = new hands[i](cards, game, canDisqualify);
         if (result.isPossible) {
           break;
@@ -340,12 +344,12 @@
       wilds = [];
       nonWilds = [];
 
-      for (var i=0; i<cards.length; i++) {
+      for (var i = 0; i < cards.length; i++) {
         card = cards[i];
         if (card.rank === -1) {
-          wilds.push(cards[i]);  
+          wilds.push(cards[i]);
         } else {
-          nonWilds.push(cards[i]);  
+          nonWilds.push(cards[i]);
         }
       }
 
@@ -369,7 +373,7 @@
         if (cards && cards.length >= this.game.sfQualify) {
           possibleStraight = cards;
           break;
-        } 
+        }
       }
 
       if (possibleStraight) {
@@ -419,7 +423,7 @@
       this.resetWildCards();
       var result = super.solve();
       if (result && this.cards) {
-        for (i=0; i<this.game.sfQualify && i<this.cards.length; i++) {
+        for (i = 0; i < this.game.sfQualify && i < this.cards.length; i++) {
           if (this.cards[i].value === this.game.wildValue) {
             result = false;
             this.descr = 'Wild Royal Flush';
@@ -444,7 +448,7 @@
       this.resetWildCards();
       var result = super.solve();
       if (result && this.cards) {
-        for (i=0; i<this.game.sfQualify && i<this.cards.length; i++) {
+        for (i = 0; i < this.game.sfQualify && i < this.cards.length; i++) {
           if (this.cards[i].value === this.game.wildValue) {
             this.descr = 'Wild Royal Flush';
             break;
@@ -467,10 +471,10 @@
     solve() {
       this.resetWildCards();
 
-      for (var i=0; i<this.values.length; i++) {
+      for (var i = 0; i < this.values.length; i++) {
         if (this.getNumCardsByRank(i) === 5) {
           this.cards = this.values[i] || [];
-          for (var j=0; j<this.wilds.length && this.cards.length<5; j++) {
+          for (var j = 0; j < this.wilds.length && this.cards.length < 5; j++) {
             var wild = this.wilds[j];
             if (this.cards) {
               wild.rank = this.cards[0].rank;
@@ -480,13 +484,13 @@
             wild.wildValue = values[wild.rank];
             this.cards.push(wild);
           }
-          this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand-5));
+          this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand - 5));
           break;
         }
       }
 
       if (this.cards.length >= 5) {
-        this.descr = this.name + ', ' + this.cards[0].toString().slice(0, -1) + '\'s';
+        this.descr = this.name + ', ' + this.cards[0].toString().slice(0, -1) + "'s";
       }
 
       return this.cards.length >= 5;
@@ -502,10 +506,10 @@
       var cards;
       this.resetWildCards();
 
-      for (var i=0; i<this.values.length; i++) {
+      for (var i = 0; i < this.values.length; i++) {
         if (this.getNumCardsByRank(i) === 4) {
           this.cards = this.values[i] || [];
-          for (var j=0; j<this.wilds.length && this.cards.length<4; j++) {
+          for (var j = 0; j < this.wilds.length && this.cards.length < 4; j++) {
             var wild = this.wilds[j];
             if (this.cards) {
               wild.rank = this.cards[0].rank;
@@ -520,14 +524,14 @@
       }
 
       if (this.cards.length === 4) {
-        for (i=0; i<this.values.length; i++) {
+        for (i = 0; i < this.values.length; i++) {
           cards = this.values[i];
           if (cards && this.cards[0].wildValue === cards[0].wildValue) {
             continue;
           }
           if (this.getNumCardsByRank(i) >= 2) {
             this.cards = this.cards.concat(cards || []);
-            for (var j=0; j<this.wilds.length; j++) {
+            for (var j = 0; j < this.wilds.length; j++) {
               var wild = this.wilds[j];
               if (wild.rank !== -1) {
                 continue;
@@ -542,14 +546,14 @@
               wild.wildValue = values[wild.rank];
               this.cards.push(wild);
             }
-            this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand-6));
+            this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand - 6));
             break;
           }
         }
       }
 
       if (this.cards.length >= 6) {
-        var type = this.cards[0].toString().slice(0, -1) + '\'s over ' + this.cards[4].toString().slice(0, -1) + '\'s';
+        var type = this.cards[0].toString().slice(0, -1) + "'s over " + this.cards[4].toString().slice(0, -1) + "'s";
         this.descr = this.name + ', ' + type;
       }
 
@@ -565,10 +569,10 @@
     solve() {
       this.resetWildCards();
 
-      for (var i=0; i<this.values.length; i++) {
+      for (var i = 0; i < this.values.length; i++) {
         if (this.getNumCardsByRank(i) === 4) {
           this.cards = this.values[i] || [];
-          for (var j=0; j<this.wilds.length && this.cards.length<4; j++) {
+          for (var j = 0; j < this.wilds.length && this.cards.length < 4; j++) {
             var wild = this.wilds[j];
             if (this.cards) {
               wild.rank = this.cards[0].rank;
@@ -579,7 +583,7 @@
             this.cards.push(wild);
           }
 
-          this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand-4));
+          this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand - 4));
           break;
         }
       }
@@ -589,7 +593,7 @@
           this.cards.length = 4;
         }
 
-        this.descr = this.name + ', ' + this.cards[0].toString().slice(0, -1) + '\'s';
+        this.descr = this.name + ', ' + this.cards[0].toString().slice(0, -1) + "'s";
       }
 
       return this.cards.length >= 4;
@@ -604,7 +608,7 @@
     solve() {
       if (this.wilds.length === 4) {
         this.cards = this.wilds;
-        this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand-4));
+        this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand - 4));
       }
 
       if (this.cards.length >= 4) {
@@ -628,10 +632,10 @@
       var cards;
       this.resetWildCards();
 
-      for (var i=0; i<this.values.length; i++) {
+      for (var i = 0; i < this.values.length; i++) {
         if (this.getNumCardsByRank(i) === 3) {
           this.cards = this.values[i] || [];
-          for (var j=0; j<this.wilds.length && this.cards.length<3; j++) {
+          for (var j = 0; j < this.wilds.length && this.cards.length < 3; j++) {
             var wild = this.wilds[j];
             if (this.cards) {
               wild.rank = this.cards[0].rank;
@@ -646,14 +650,14 @@
       }
 
       if (this.cards.length === 3) {
-        for (var i=0; i<this.values.length; i++) {
+        for (var i = 0; i < this.values.length; i++) {
           var cards = this.values[i];
           if (cards && this.cards[0].wildValue === cards[0].wildValue) {
             continue;
           }
           if (this.cards.length > 5 && this.getNumCardsByRank(i) === 2) {
             this.cards = this.cards.concat(cards || []);
-            for (var j=0; j<this.wilds.length; j++) {
+            for (var j = 0; j < this.wilds.length; j++) {
               var wild = this.wilds[j];
               if (wild.rank !== -1) {
                 continue;
@@ -668,11 +672,11 @@
               wild.wildValue = values[wild.rank];
               this.cards.push(wild);
             }
-            this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand-4));
+            this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand - 4));
             break;
           } else if (this.getNumCardsByRank(i) === 2) {
             this.cards = this.cards.concat(cards);
-            for (var j=0; j<this.wilds.length; j++) {
+            for (var j = 0; j < this.wilds.length; j++) {
               var wild = this.wilds[j];
               if (wild.rank !== -1) {
                 continue;
@@ -692,7 +696,13 @@
       }
 
       if (this.cards.length >= 7) {
-        var type = this.cards[0].toString().slice(0, -1) + '\'s over ' + this.cards[3].toString().slice(0, -1) + '\'s & ' + this.cards[5].value + '\'s';
+        var type =
+          this.cards[0].toString().slice(0, -1) +
+          "'s over " +
+          this.cards[3].toString().slice(0, -1) +
+          "'s & " +
+          this.cards[5].value +
+          "'s";
         this.descr = this.name + ', ' + type;
       }
 
@@ -709,10 +719,10 @@
       var cards;
       this.resetWildCards();
 
-      for (var i=0; i<this.values.length; i++) {
+      for (var i = 0; i < this.values.length; i++) {
         if (this.getNumCardsByRank(i) === 3) {
           this.cards = this.values[i] || [];
-          for (var j=0; j<this.wilds.length && this.cards.length<3; j++) {
+          for (var j = 0; j < this.wilds.length && this.cards.length < 3; j++) {
             var wild = this.wilds[j];
             if (this.cards) {
               wild.rank = this.cards[0].rank;
@@ -727,14 +737,14 @@
       }
 
       if (this.cards.length === 3) {
-        for (i=0; i<this.values.length; i++) {
+        for (i = 0; i < this.values.length; i++) {
           cards = this.values[i];
           if (cards && this.cards[0].wildValue === cards[0].wildValue) {
             continue;
           }
           if (this.getNumCardsByRank(i) >= 2) {
             this.cards = this.cards.concat(cards || []);
-            for (var j=0; j<this.wilds.length; j++) {
+            for (var j = 0; j < this.wilds.length; j++) {
               var wild = this.wilds[j];
               if (wild.rank !== -1) {
                 continue;
@@ -749,14 +759,14 @@
               wild.wildValue = values[wild.rank];
               this.cards.push(wild);
             }
-            this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand-5));
+            this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand - 5));
             break;
           }
         }
       }
 
       if (this.cards.length >= 5) {
-        var type = this.cards[0].toString().slice(0, -1) + '\'s over ' + this.cards[3].toString().slice(0, -1) + '\'s';
+        var type = this.cards[0].toString().slice(0, -1) + "'s over " + this.cards[3].toString().slice(0, -1) + "'s";
         this.descr = this.name + ', ' + type;
       }
 
@@ -785,7 +795,7 @@
         this.descr = this.name + ', ' + this.cards[0].toString().slice(0, -1) + suit + ' High';
         this.sfLength = this.cards.length;
         if (this.cards.length < this.game.cardsInHand) {
-          this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand-this.cards.length));
+          this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand - this.cards.length));
         }
       }
 
@@ -808,7 +818,7 @@
         this.cards = this.getWheel();
         if (this.cards.length) {
           var wildCount = 0;
-          for (var i=0; i<this.cards.length; i++) {
+          for (var i = 0; i < this.cards.length; i++) {
             card = this.cards[i];
             if (card.value === this.game.wildValue) {
               wildCount += 1;
@@ -822,7 +832,7 @@
             }
           }
           this.cards = this.cards.sort(Card.sort);
-          for (; wildCount<this.wilds.length && this.cards.length < this.game.cardsInHand; wildCount++) {
+          for (; wildCount < this.wilds.length && this.cards.length < this.game.cardsInHand; wildCount++) {
             card = this.wilds[wildCount];
             card.rank = values.indexOf('A');
             card.wildValue = 'A';
@@ -831,9 +841,9 @@
           this.descr = this.name + ', Wheel';
           this.sfLength = this.sfQualify;
           if (this.cards[0].value === 'A') {
-            this.cards = this.cards.concat(this.nextHighest().slice(1, this.game.cardsInHand-this.cards.length+1));
+            this.cards = this.cards.concat(this.nextHighest().slice(1, this.game.cardsInHand - this.cards.length + 1));
           } else {
-            this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand-this.cards.length));
+            this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand - this.cards.length));
           }
           return true;
         }
@@ -843,12 +853,12 @@
       this.cards = this.getGaps();
 
       // Now add the wild cards, if any, and set the appropriate ranks
-      for (var i=0; i<this.wilds.length; i++) {
+      for (var i = 0; i < this.wilds.length; i++) {
         card = this.wilds[i];
         checkCards = this.getGaps(this.cards.length);
         if (this.cards.length === checkCards.length) {
           // This is an "open-ended" straight, the high rank is the highest possible rank.
-          if (this.cards[0].rank < (values.length - 1)) {
+          if (this.cards[0].rank < values.length - 1) {
             card.rank = this.cards[0].rank + 1;
             card.wildValue = values[card.rank];
             this.cards.push(card);
@@ -859,9 +869,9 @@
           }
         } else {
           // This is an "inside" straight, the high card doesn't change.
-          for (var j=1; j<this.cards.length; j++) {
-            if (this.cards[j-1].rank - this.cards[j].rank > 1) {
-              card.rank = this.cards[j-1].rank - 1;
+          for (var j = 1; j < this.cards.length; j++) {
+            if (this.cards[j - 1].rank - this.cards[j].rank > 1) {
+              card.rank = this.cards[j - 1].rank - 1;
               card.wildValue = values[card.rank];
               this.cards.push(card);
               break;
@@ -875,10 +885,10 @@
         this.cards = this.cards.slice(0, this.game.cardsInHand);
         this.sfLength = this.cards.length;
         if (this.cards.length < this.game.cardsInHand) {
-          if (this.cards[this.sfLength-1].rank === 0) {
-            this.cards = this.cards.concat(this.nextHighest().slice(1, this.game.cardsInHand-this.cards.length+1));
+          if (this.cards[this.sfLength - 1].rank === 0) {
+            this.cards = this.cards.concat(this.nextHighest().slice(1, this.game.cardsInHand - this.cards.length + 1));
           } else {
-            this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand-this.cards.length));
+            this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand - this.cards.length));
           }
         }
       }
@@ -897,7 +907,7 @@
       wildCards = stripReturn[0];
       cardsToCheck = stripReturn[1];
 
-      for (i=0; i<cardsToCheck.length; i++) {
+      for (i = 0; i < cardsToCheck.length; i++) {
         card = cardsToCheck[i];
         if (card.wildValue === 'A') {
           cardsToCheck.push(new Card('1' + card.suit));
@@ -913,24 +923,24 @@
       }
 
       gapCards = [];
-      for (; i>0; i--) {
+      for (; i > 0; i--) {
         cardsList = [];
         gapCount = 0;
-        for (var j=0; j<cardsToCheck.length; j++) {
+        for (var j = 0; j < cardsToCheck.length; j++) {
           card = cardsToCheck[j];
           if (card.rank > i) {
             continue;
           }
           prevCard = cardsList[cardsList.length - 1];
-          diff = (prevCard) ? prevCard.rank - card.rank : i - card.rank;
+          diff = prevCard ? prevCard.rank - card.rank : i - card.rank;
 
           if (diff === null) {
             cardsList.push(card);
-          } else if (checkHandLength < (gapCount + diff + cardsList.length)) {
+          } else if (checkHandLength < gapCount + diff + cardsList.length) {
             break;
           } else if (diff > 0) {
             cardsList.push(card);
-            gapCount += (diff - 1);
+            gapCount += diff - 1;
           }
         }
         if (cardsList.length > gapCards.length) {
@@ -951,7 +961,7 @@
       wildCards = stripReturn[0];
       cardsToCheck = stripReturn[1];
 
-      for (i=0; i<cardsToCheck.length; i++) {
+      for (i = 0; i < cardsToCheck.length; i++) {
         card = cardsToCheck[i];
         if (card.wildValue === 'A') {
           cardsToCheck.push(new Card('1' + card.suit));
@@ -961,9 +971,9 @@
 
       wheelCards = [];
       wildCount = 0;
-      for (i = this.game.sfQualify-1; i>=0; i--) {
+      for (i = this.game.sfQualify - 1; i >= 0; i--) {
         cardFound = false;
-        for (var j=0; j<cardsToCheck.length; j++) {
+        for (var j = 0; j < cardsToCheck.length; j++) {
           card = cardsToCheck[j];
           if (card.rank > i) {
             continue;
@@ -998,11 +1008,11 @@
 
     solve() {
       this.resetWildCards();
-      for (var i=0; i<this.values.length; i++) {
+      for (var i = 0; i < this.values.length; i++) {
         var cards = this.values[i];
         if (this.cards.length > 0 && this.getNumCardsByRank(i) === 3) {
           this.cards = this.cards.concat(cards || []);
-          for (var j=0; j<this.wilds.length; j++) {
+          for (var j = 0; j < this.wilds.length; j++) {
             var wild = this.wilds[j];
             if (wild.rank !== -1) {
               continue;
@@ -1017,11 +1027,11 @@
             wild.wildValue = values[wild.rank];
             this.cards.push(wild);
           }
-          this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand-6));
+          this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand - 6));
           break;
         } else if (this.getNumCardsByRank(i) === 3) {
           this.cards = this.cards.concat(cards);
-          for (var j=0; j<this.wilds.length; j++) {
+          for (var j = 0; j < this.wilds.length; j++) {
             var wild = this.wilds[j];
             if (wild.rank !== -1) {
               continue;
@@ -1040,7 +1050,7 @@
       }
 
       if (this.cards.length >= 6) {
-        var type = this.cards[0].toString().slice(0, -1) + '\'s & ' + this.cards[3].toString().slice(0, -1) + '\'s';
+        var type = this.cards[0].toString().slice(0, -1) + "'s & " + this.cards[3].toString().slice(0, -1) + "'s";
         this.descr = this.name + ', ' + type;
       }
 
@@ -1056,10 +1066,10 @@
     solve() {
       this.resetWildCards();
 
-      for (var i=0; i<this.values.length; i++) {
+      for (var i = 0; i < this.values.length; i++) {
         if (this.getNumCardsByRank(i) === 3) {
           this.cards = this.values[i] || [];
-          for (var j=0; j<this.wilds.length && this.cards.length<3; j++) {
+          for (var j = 0; j < this.wilds.length && this.cards.length < 3; j++) {
             var wild = this.wilds[j];
             if (this.cards) {
               wild.rank = this.cards[0].rank;
@@ -1069,7 +1079,7 @@
             wild.wildValue = values[wild.rank];
             this.cards.push(wild);
           }
-          this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand-3));
+          this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand - 3));
           break;
         }
       }
@@ -1079,7 +1089,7 @@
           this.cards.length = 3;
         }
 
-        this.descr = this.name + ', ' + this.cards[0].toString().slice(0, -1) + '\'s';
+        this.descr = this.name + ', ' + this.cards[0].toString().slice(0, -1) + "'s";
       }
 
       return this.cards.length >= 3;
@@ -1094,11 +1104,11 @@
     solve() {
       this.resetWildCards();
 
-      for (var i=0; i<this.values.length; i++) {
+      for (var i = 0; i < this.values.length; i++) {
         var cards = this.values[i];
         if (this.cards.length > 2 && this.getNumCardsByRank(i) === 2) {
           this.cards = this.cards.concat(cards || []);
-          for (var j=0; j<this.wilds.length; j++) {
+          for (var j = 0; j < this.wilds.length; j++) {
             var wild = this.wilds[j];
             if (wild.rank !== -1) {
               continue;
@@ -1113,11 +1123,11 @@
             wild.wildValue = values[wild.rank];
             this.cards.push(wild);
           }
-          this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand-6));
+          this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand - 6));
           break;
         } else if (this.cards.length > 0 && this.getNumCardsByRank(i) === 2) {
           this.cards = this.cards.concat(cards || []);
-          for (var j=0; j<this.wilds.length; j++) {
+          for (var j = 0; j < this.wilds.length; j++) {
             var wild = this.wilds[j];
             if (wild.rank !== -1) {
               continue;
@@ -1134,7 +1144,7 @@
           }
         } else if (this.getNumCardsByRank(i) === 2) {
           this.cards = this.cards.concat(cards);
-          for (var j=0; j<this.wilds.length; j++) {
+          for (var j = 0; j < this.wilds.length; j++) {
             var wild = this.wilds[j];
             if (wild.rank !== -1) {
               continue;
@@ -1153,7 +1163,13 @@
       }
 
       if (this.cards.length >= 6) {
-        var type = this.cards[0].toString().slice(0, -1) + '\'s & ' + this.cards[2].toString().slice(0, -1) + '\'s & ' + this.cards[4].toString().slice(0, -1) + '\'s';
+        var type =
+          this.cards[0].toString().slice(0, -1) +
+          "'s & " +
+          this.cards[2].toString().slice(0, -1) +
+          "'s & " +
+          this.cards[4].toString().slice(0, -1) +
+          "'s";
         this.descr = this.name + ', ' + type;
       }
 
@@ -1169,11 +1185,11 @@
     solve() {
       this.resetWildCards();
 
-      for (var i=0; i<this.values.length; i++) {
+      for (var i = 0; i < this.values.length; i++) {
         var cards = this.values[i];
         if (this.cards.length > 0 && this.getNumCardsByRank(i) === 2) {
           this.cards = this.cards.concat(cards || []);
-          for (var j=0; j<this.wilds.length; j++) {
+          for (var j = 0; j < this.wilds.length; j++) {
             var wild = this.wilds[j];
             if (wild.rank !== -1) {
               continue;
@@ -1188,11 +1204,11 @@
             wild.wildValue = values[wild.rank];
             this.cards.push(wild);
           }
-          this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand-4));
+          this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand - 4));
           break;
         } else if (this.getNumCardsByRank(i) === 2) {
           this.cards = this.cards.concat(cards);
-          for (var j=0; j<this.wilds.length; j++) {
+          for (var j = 0; j < this.wilds.length; j++) {
             var wild = this.wilds[j];
             if (wild.rank !== -1) {
               continue;
@@ -1215,7 +1231,7 @@
           this.cards.length = 4;
         }
 
-        var type = this.cards[0].toString().slice(0, -1) + '\'s & ' + this.cards[2].toString().slice(0, -1) + '\'s';
+        var type = this.cards[0].toString().slice(0, -1) + "'s & " + this.cards[2].toString().slice(0, -1) + "'s";
         this.descr = this.name + ', ' + type;
       }
 
@@ -1231,10 +1247,10 @@
     solve() {
       this.resetWildCards();
 
-      for (var i=0; i<this.values.length; i++) {
+      for (var i = 0; i < this.values.length; i++) {
         if (this.getNumCardsByRank(i) === 2) {
           this.cards = this.cards.concat(this.values[i] || []);
-          for (var j=0; j<this.wilds.length && this.cards.length<2; j++) {
+          for (var j = 0; j < this.wilds.length && this.cards.length < 2; j++) {
             var wild = this.wilds[j];
             if (this.cards) {
               wild.rank = this.cards[0].rank;
@@ -1244,7 +1260,7 @@
             wild.wildValue = values[wild.rank];
             this.cards.push(wild);
           }
-          this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand-2));
+          this.cards = this.cards.concat(this.nextHighest().slice(0, this.game.cardsInHand - 2));
           break;
         }
       }
@@ -1254,7 +1270,7 @@
           this.cards.length = 2;
         }
 
-        this.descr = this.name + ', ' + this.cards[0].toString().slice(0, -1) + '\'s';
+        this.descr = this.name + ', ' + this.cards[0].toString().slice(0, -1) + "'s";
       }
 
       return this.cards.length >= 2;
@@ -1269,7 +1285,7 @@
     solve() {
       this.cards = this.cardPool.slice(0, this.game.cardsInHand);
 
-      for (var i=0; i<this.cards.length; i++) {
+      for (var i = 0; i < this.cards.length; i++) {
         var card = this.cards[i];
         if (this.cards[i].value === this.game.wildValue) {
           this.cards[i].wildValue = 'A';
@@ -1285,6 +1301,45 @@
       this.descr = this.cards[0].toString().slice(0, -1) + ' High';
 
       return true;
+    }
+  }
+
+  class SingleCard extends Hand {
+    constructor(cards, game, canDisqualify) {
+      super(cards, 'Single Card', game, canDisqualify);
+    }
+
+    solve() {
+      this.cards = this.cardPool.slice(0, this.game.cardsInHand);
+
+      this.cards = this.cards.sort(Card.sort);
+      this.descr = this.cards[0].toString().slice(0, -1) + ' Single';
+
+      return this.cards.length === 1;
+    }
+  }
+
+  class Pair extends Hand {
+    constructor(cards, game, canDisqualify) {
+      super(cards, 'Pair', game, canDisqualify);
+    }
+
+    solve() {
+      this.cards = this.cardPool.slice(0, this.game.cardsInHand);
+
+      return this.cards.length === 2 && this.cards[0].value === this.cards[1].value;
+    }
+  }
+
+  class Triples extends Hand {
+    constructor(cards, game, canDisqualify) {
+      super(cards, 'Triples', game, canDisqualify);
+    }
+
+    solve() {
+      this.cards = this.cardPool.slice(0, this.game.cardsInHand);
+
+      return this.cards.length === 3 && (this.cards[0].value === this.cards[1].value) === this.cards[2].value;
     }
   }
 
@@ -1383,7 +1438,11 @@
               loCards = altHand.cards.slice(2, 4);
               hiCards = hiCards.concat(altHand.cards.slice(4, 7));
             }
-          } else if (altHand.cards[0].wildValue !== 'A' && altHand.cards[2].rank < 6 && altHand.cards[4].wildValue === 'A') {
+          } else if (
+            altHand.cards[0].wildValue !== 'A' &&
+            altHand.cards[2].rank < 6 &&
+            altHand.cards[4].wildValue === 'A'
+          ) {
             hiCards = altHand.cards.slice(0, 4);
             loCards = altHand.cards.slice(4, 6);
             hiCards.push(altHand.cards[6]);
@@ -1393,7 +1452,11 @@
             hiCards = hiCards.concat(altHand.cards.slice(4, 7));
           }
         } else if (altGame.handValues[altRank] === OnePair) {
-          if (altHand.cards[0].rank >= values.indexOf('T') && altHand.cards[0].rank <= values.indexOf('K') && altHand.cards[2].wildValue === 'A') {
+          if (
+            altHand.cards[0].rank >= values.indexOf('T') &&
+            altHand.cards[0].rank <= values.indexOf('K') &&
+            altHand.cards[2].wildValue === 'A'
+          ) {
             var possibleSF = altHand.cards.slice(0, 2);
             possibleSF = possibleSF.concat(altHand.cards.slice(3, 7));
             sfReturn = this.getSFData(possibleSF);
@@ -1446,7 +1509,11 @@
         loCards = this.baseHand.cards.slice(3, 5);
         hiCards = hiCards.concat(this.baseHand.cards.slice(5, 7));
       } else if (handValue === FullHouse) {
-        if (this.baseHand.cards[3].wildValue === '2' && this.baseHand.cards[5].wildValue === 'A' && this.baseHand.cards[6].wildValue === 'K') {
+        if (
+          this.baseHand.cards[3].wildValue === '2' &&
+          this.baseHand.cards[5].wildValue === 'A' &&
+          this.baseHand.cards[6].wildValue === 'K'
+        ) {
           hiCards = this.baseHand.cards.slice(0, 5);
           loCards = this.baseHand.cards.slice(5, 7);
         } else {
@@ -1482,7 +1549,11 @@
             loCards = this.baseHand.cards.slice(2, 4);
             hiCards = hiCards.concat(this.baseHand.cards.slice(4, 7));
           }
-        } else if (this.baseHand.cards[0].wildValue !== 'A' && this.baseHand.cards[2].rank < 6 && this.baseHand.cards[4].wildValue === 'A') {
+        } else if (
+          this.baseHand.cards[0].wildValue !== 'A' &&
+          this.baseHand.cards[2].rank < 6 &&
+          this.baseHand.cards[4].wildValue === 'A'
+        ) {
           hiCards = this.baseHand.cards.slice(0, 4);
           loCards = this.baseHand.cards.slice(4, 6);
           hiCards.push(this.baseHand.cards[6]);
@@ -1524,7 +1595,7 @@
         new Straight(cards, this.game)
       ];
 
-      for (var i=0; i<handsToCheck.length; i++) {
+      for (var i = 0; i < handsToCheck.length; i++) {
         var hand = handsToCheck[i];
         if (hand.isPossible) {
           if (hand.sfLength === 7) {
@@ -1542,7 +1613,13 @@
           }
           if (possibleLoCards) {
             possibleLoCards = possibleLoCards.sort(Card.sort);
-            if (!bestLoCards || bestLoCards[0].rank < possibleLoCards[0].rank || (bestLoCards.length > 1 && bestLoCards[0].rank === possibleLoCards[0].rank && bestLoCards[1].rank < possibleLoCards[1].rank)) {
+            if (
+              !bestLoCards ||
+              bestLoCards[0].rank < possibleLoCards[0].rank ||
+              (bestLoCards.length > 1 &&
+                bestLoCards[0].rank === possibleLoCards[0].rank &&
+                bestLoCards[1].rank < possibleLoCards[1].rank)
+            ) {
               bestLoCards = possibleLoCards;
               bestHand = hand;
             }
@@ -1653,7 +1730,7 @@
      * @return {PaiGowPokerHelper} Object with split hands.
      */
     static solve(fullHand) {
-      var result = new PaiGowPokerHelper(fullHand = fullHand || ['']);
+      var result = new PaiGowPokerHelper((fullHand = fullHand || ['']));
       result.splitHouseWay();
 
       return result;
@@ -1661,129 +1738,189 @@
   }
 
   var gameRules = {
-    'standard': {
-      'cardsInHand': 5,
-      'handValues': [StraightFlush, FourOfAKind, FullHouse, Flush, Straight, ThreeOfAKind, TwoPair, OnePair, HighCard],
-      'wildValue': null,
-      'wildStatus': 1,
-      'wheelStatus': 0,
-      'sfQualify': 5,
-      'lowestQualified': null,
-      "noKickers": false
+    bigtwo: {
+      cardsInHand: 5,
+      handValues: [Triples, Pair, SingleCard],
+      wildValue: 1,
+      wildStatus: 1,
+      wheelStatus: 0,
+      sfQualify: 5,
+      lowestQualified: ['5c', '4d', '3h', '3s', '3c'],
+      noKickers: false
     },
-    'jacksbetter': {
-      'cardsInHand': 5,
-      'handValues': [StraightFlush, FourOfAKind, FullHouse, Flush, Straight, ThreeOfAKind, TwoPair, OnePair, HighCard],
-      'wildValue': null,
-      'wildStatus': 1,
-      'wheelStatus': 0,
-      'sfQualify': 5,
-      'lowestQualified': ['Jc', 'Jd', '4h', '3s', '2c'],
-      "noKickers": true
+    standard: {
+      cardsInHand: 5,
+      handValues: [StraightFlush, FourOfAKind, FullHouse, Flush, Straight, ThreeOfAKind, TwoPair, OnePair, HighCard],
+      wildValue: null,
+      wildStatus: 1,
+      wheelStatus: 0,
+      sfQualify: 5,
+      lowestQualified: null,
+      noKickers: false
     },
-    'joker': {
-      'cardsInHand': 5,
-      'handValues': [NaturalRoyalFlush, FiveOfAKind, WildRoyalFlush, StraightFlush, FourOfAKind, FullHouse, Flush, Straight, ThreeOfAKind, TwoPair, HighCard],
-      'wildValue': 'O',
-      'wildStatus': 1,
-      'wheelStatus': 0,
-      'sfQualify': 5,
-      'lowestQualified': ['4c', '3d', '3h', '2s', '2c'],
-      "noKickers": true
+    jacksbetter: {
+      cardsInHand: 5,
+      handValues: [StraightFlush, FourOfAKind, FullHouse, Flush, Straight, ThreeOfAKind, TwoPair, OnePair, HighCard],
+      wildValue: null,
+      wildStatus: 1,
+      wheelStatus: 0,
+      sfQualify: 5,
+      lowestQualified: ['Jc', 'Jd', '4h', '3s', '2c'],
+      noKickers: true
     },
-    'deuceswild': {
-      'cardsInHand': 5,
-      'handValues': [NaturalRoyalFlush, FourWilds, WildRoyalFlush, FiveOfAKind, StraightFlush, FourOfAKind, FullHouse, Flush, Straight, ThreeOfAKind, HighCard],
-      'wildValue': '2',
-      'wildStatus': 1,
-      'wheelStatus': 0,
-      'sfQualify': 5,
-      'lowestQualified': ['5c', '4d', '3h', '3s', '3c'],
-      "noKickers": true
+    joker: {
+      cardsInHand: 5,
+      handValues: [
+        NaturalRoyalFlush,
+        FiveOfAKind,
+        WildRoyalFlush,
+        StraightFlush,
+        FourOfAKind,
+        FullHouse,
+        Flush,
+        Straight,
+        ThreeOfAKind,
+        TwoPair,
+        HighCard
+      ],
+      wildValue: 'O',
+      wildStatus: 1,
+      wheelStatus: 0,
+      sfQualify: 5,
+      lowestQualified: ['4c', '3d', '3h', '2s', '2c'],
+      noKickers: true
     },
-    'threecard': {
-      'cardsInHand': 3,
-      'handValues': [StraightFlush, ThreeOfAKind, Straight, Flush, OnePair, HighCard],
-      'wildValue': null,
-      'wildStatus': 1,
-      'wheelStatus': 0,
-      'sfQualify': 3,
-      'lowestQualified': ['Qh', '3s', '2c'],
-      "noKickers": false
+    deuceswild: {
+      cardsInHand: 5,
+      handValues: [
+        NaturalRoyalFlush,
+        FourWilds,
+        WildRoyalFlush,
+        FiveOfAKind,
+        StraightFlush,
+        FourOfAKind,
+        FullHouse,
+        Flush,
+        Straight,
+        ThreeOfAKind,
+        HighCard
+      ],
+      wildValue: '2',
+      wildStatus: 1,
+      wheelStatus: 0,
+      sfQualify: 5,
+      lowestQualified: ['5c', '4d', '3h', '3s', '3c'],
+      noKickers: true
     },
-    'fourcard': {
-      'cardsInHand': 4,
-      'handValues': [FourOfAKind, StraightFlush, ThreeOfAKind, Flush, Straight, TwoPair, OnePair, HighCard],
-      'wildValue': null,
-      'wildStatus': 1,
-      'wheelStatus': 0,
-      'sfQualify': 4,
-      'lowestQualified': null,
-      "noKickers": true
+    threecard: {
+      cardsInHand: 3,
+      handValues: [StraightFlush, ThreeOfAKind, Straight, Flush, OnePair, HighCard],
+      wildValue: null,
+      wildStatus: 1,
+      wheelStatus: 0,
+      sfQualify: 3,
+      lowestQualified: ['Qh', '3s', '2c'],
+      noKickers: false
     },
-    'fourcardbonus': {
-      'cardsInHand': 4,
-      'handValues': [FourOfAKind, StraightFlush, ThreeOfAKind, Flush, Straight, TwoPair, OnePair, HighCard],
-      'wildValue': null,
-      'wildStatus': 1,
-      'wheelStatus': 0,
-      'sfQualify': 4,
-      'lowestQualified': ['Ac', 'Ad', '3h', '2s'],
-      "noKickers": true
+    fourcard: {
+      cardsInHand: 4,
+      handValues: [FourOfAKind, StraightFlush, ThreeOfAKind, Flush, Straight, TwoPair, OnePair, HighCard],
+      wildValue: null,
+      wildStatus: 1,
+      wheelStatus: 0,
+      sfQualify: 4,
+      lowestQualified: null,
+      noKickers: true
     },
-    'paigowpokerfull': {
-      'cardsInHand': 7,
-      'handValues': [FiveOfAKind, FourOfAKindPairPlus, StraightFlush, Flush, Straight, FourOfAKind, TwoThreeOfAKind, ThreeOfAKindTwoPair, FullHouse, ThreeOfAKind, ThreePair, TwoPair, OnePair, HighCard],
-      'wildValue': 'O',
-      'wildStatus': 0,
-      'wheelStatus': 1,
-      'sfQualify': 5,
-      'lowestQualified': null
+    fourcardbonus: {
+      cardsInHand: 4,
+      handValues: [FourOfAKind, StraightFlush, ThreeOfAKind, Flush, Straight, TwoPair, OnePair, HighCard],
+      wildValue: null,
+      wildStatus: 1,
+      wheelStatus: 0,
+      sfQualify: 4,
+      lowestQualified: ['Ac', 'Ad', '3h', '2s'],
+      noKickers: true
     },
-    'paigowpokeralt': {
-      'cardsInHand': 7,
-      'handValues': [FourOfAKind, FullHouse, ThreeOfAKind, ThreePair, TwoPair, OnePair, HighCard],
-      'wildValue': 'O',
-      'wildStatus': 0,
-      'wheelStatus': 1,
-      'sfQualify': 5,
-      'lowestQualified': null
+    paigowpokerfull: {
+      cardsInHand: 7,
+      handValues: [
+        FiveOfAKind,
+        FourOfAKindPairPlus,
+        StraightFlush,
+        Flush,
+        Straight,
+        FourOfAKind,
+        TwoThreeOfAKind,
+        ThreeOfAKindTwoPair,
+        FullHouse,
+        ThreeOfAKind,
+        ThreePair,
+        TwoPair,
+        OnePair,
+        HighCard
+      ],
+      wildValue: 'O',
+      wildStatus: 0,
+      wheelStatus: 1,
+      sfQualify: 5,
+      lowestQualified: null
     },
-    'paigowpokersf6': {
-      'cardsInHand': 7,
-      'handValues': [StraightFlush, Flush, Straight],
-      'wildValue': 'O',
-      'wildStatus': 0,
-      'wheelStatus': 1,
-      'sfQualify': 6,
-      'lowestQualified': null
+    paigowpokeralt: {
+      cardsInHand: 7,
+      handValues: [FourOfAKind, FullHouse, ThreeOfAKind, ThreePair, TwoPair, OnePair, HighCard],
+      wildValue: 'O',
+      wildStatus: 0,
+      wheelStatus: 1,
+      sfQualify: 5,
+      lowestQualified: null
     },
-    'paigowpokersf7': {
-      'cardsInHand': 7,
-      'handValues': [StraightFlush, Flush, Straight],
-      'wildValue': 'O',
-      'wildStatus': 0,
-      'wheelStatus': 1,
-      'sfQualify': 7,
-      'lowestQualified': null
+    paigowpokersf6: {
+      cardsInHand: 7,
+      handValues: [StraightFlush, Flush, Straight],
+      wildValue: 'O',
+      wildStatus: 0,
+      wheelStatus: 1,
+      sfQualify: 6,
+      lowestQualified: null
     },
-    'paigowpokerhi': {
-      'cardsInHand': 5,
-      'handValues': [FiveOfAKind, StraightFlush, FourOfAKind, FullHouse, Flush, Straight, ThreeOfAKind, TwoPair, OnePair, HighCard],
-      'wildValue': 'O',
-      'wildStatus': 0,
-      'wheelStatus': 1,
-      'sfQualify': 5,
-      'lowestQualified': null
+    paigowpokersf7: {
+      cardsInHand: 7,
+      handValues: [StraightFlush, Flush, Straight],
+      wildValue: 'O',
+      wildStatus: 0,
+      wheelStatus: 1,
+      sfQualify: 7,
+      lowestQualified: null
     },
-    'paigowpokerlo': {
-      'cardsInHand': 2,
-      'handValues': [OnePair, HighCard],
-      'wildValue': 'O',
-      'wildStatus': 0,
-      'wheelStatus': 1,
-      'sfQualify': 5,
-      'lowestQualified': null
+    paigowpokerhi: {
+      cardsInHand: 5,
+      handValues: [
+        FiveOfAKind,
+        StraightFlush,
+        FourOfAKind,
+        FullHouse,
+        Flush,
+        Straight,
+        ThreeOfAKind,
+        TwoPair,
+        OnePair,
+        HighCard
+      ],
+      wildValue: 'O',
+      wildStatus: 0,
+      wheelStatus: 1,
+      sfQualify: 5,
+      lowestQualified: null
+    },
+    paigowpokerlo: {
+      cardsInHand: 2,
+      handValues: [OnePair, HighCard],
+      wildValue: 'O',
+      wildStatus: 0,
+      wheelStatus: 1,
+      sfQualify: 5,
+      lowestQualified: null
     }
   };
 
@@ -1839,6 +1976,9 @@
     global.TwoPair = TwoPair;
     global.OnePair = OnePair;
     global.HighCard = HighCard;
+    global.SingleCard = SingleCard;
+    global.Pair = Pair;
+    global.Triples = Triples;
     global.PaiGowPokerHelper = PaiGowPokerHelper;
   }
 
@@ -1851,5 +1991,4 @@
   if (typeof window !== 'undefined') {
     exportToGlobal(window);
   }
-
 })();
