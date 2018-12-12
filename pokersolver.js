@@ -1339,7 +1339,59 @@
     solve() {
       this.cards = this.cardPool.slice(0, this.game.cardsInHand);
 
-      return this.cards.length === 3 && (this.cards[0].value === this.cards[1].value) === this.cards[2].value;
+      const value = this.cards[0].value;
+
+      return this.cards.length === 3 && value === this.cards[1].value && value === this.cards[2].value;
+    }
+  }
+
+  class Big2FiveCardHand extends Hand {
+    inSequence() {
+      var sequence = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K'];
+      var numbers = this.cards.map(({ value }) => sequence.indexOf(value)).sort((a, b) => a - b);
+      var continuous = true;
+
+      for (var i = 0; i < numbers.length - 1; i++) {
+        var curr = numbers[i];
+        var next = numbers[i + 1];
+        if (Math.abs(curr - next) !== 1 && !(curr === 0 && next === 9)) {
+          continuous = false;
+          break;
+        }
+      }
+
+      return continuous;
+    }
+
+    sameSuit() {
+      // https://stackoverflow.com/a/21266395
+      return !!this.cards.reduce((a, b) => {
+        return a.suit === b.suit ? a : NaN;
+      });
+    }
+  }
+
+  class Snake extends Big2FiveCardHand {
+    constructor(cards, game, canDisqualify) {
+      super(cards, 'Snake', game, canDisqualify);
+    }
+
+    solve() {
+      this.cards = this.cardPool.slice(0, this.game.cardsInHand);
+
+      return this.cards.length === 5 && this.inSequence() && !this.sameSuit();
+    }
+  }
+
+  class Flower extends Big2FiveCardHand {
+    constructor(cards, game, canDisqualify) {
+      super(cards, 'Flower', game, canDisqualify);
+    }
+
+    solve() {
+      this.cards = this.cardPool.slice(0, this.game.cardsInHand);
+
+      return this.cards.length === 5 && !this.inSequence() && this.sameSuit();
     }
   }
 
@@ -1740,12 +1792,12 @@
   var gameRules = {
     bigtwo: {
       cardsInHand: 5,
-      handValues: [Triples, Pair, SingleCard],
+      handValues: [StraightFlush, FourOfAKind, FullHouse, Flower, Snake, Triples, Pair, SingleCard],
       wildValue: 1,
       wildStatus: 1,
       wheelStatus: 0,
       sfQualify: 5,
-      lowestQualified: ['5c', '4d', '3h', '3s', '3c'],
+      lowestQualified: null,
       noKickers: false
     },
     standard: {
@@ -1979,6 +2031,8 @@
     global.SingleCard = SingleCard;
     global.Pair = Pair;
     global.Triples = Triples;
+    global.Snake = Snake;
+    global.Flower = Flower;
     global.PaiGowPokerHelper = PaiGowPokerHelper;
   }
 
