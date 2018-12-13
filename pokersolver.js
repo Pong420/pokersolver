@@ -8,17 +8,23 @@
   'use strict';
 
   // NOTE: The 'joker' will be denoted with a value of 'O' and any suit.
-  // var values = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
-  var values = ['3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A', '2'];
+  function getValues(game) {
+    switch (game.descr) {
+      case 'bigtwo':
+        return ['3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A', '2'];
+      default:
+        return ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
+    }
+  }
 
   /**
    * Base Card class that defines a single card.
    */
   class Card {
-    constructor(str) {
+    constructor(str, game) {
       this.value = str.substr(0, 1);
       this.suit = str.substr(1, 1).toLowerCase();
-      this.rank = values.indexOf(this.value);
+      this.rank = getValues(game).indexOf(this.value);
       this.wildValue = str.substr(0, 1);
     }
 
@@ -69,7 +75,7 @@
 
       // Set up the pool of cards.
       this.cardPool = cards.map(function(c) {
-        return typeof c === 'string' ? new Card(c) : c;
+        return typeof c === 'string' ? new Card(c, game) : c;
       });
 
       // Fix the card ranks for wild cards, and sort.
@@ -145,6 +151,7 @@
      * @return {Number} Number of cards having the rank, including wild cards.
      */
     getNumCardsByRank(val) {
+      var values = getValues(this.game);
       var cards = this.values[val];
       var checkCardsLength = cards ? cards.length : 0;
 
@@ -171,6 +178,7 @@
      */
     getCardsForFlush(suit, setRanks) {
       var cards = (this.suits[suit] || []).sort(Card.sort);
+      var values = getValues(this.game);
 
       for (var i = 0; i < this.wilds.length; i++) {
         var wild = this.wilds[i];
@@ -222,6 +230,7 @@
 
       // Account for remaining wild card when it must be ace.
       if (this.game.wildStatus === 0) {
+        var values = getValues(this.game);
         for (var i = 0; i < picks.length; i++) {
           var card = picks[i];
           if (card.rank === -1) {
@@ -471,6 +480,7 @@
     solve() {
       this.resetWildCards();
 
+      var values = getValues(this.game);
       for (var i = 0; i < this.values.length; i++) {
         if (this.getNumCardsByRank(i) === 5) {
           this.cards = this.values[i] || [];
@@ -503,9 +513,9 @@
     }
 
     solve() {
+      var values = getValues(this.game);
       var cards;
       this.resetWildCards();
-
       for (var i = 0; i < this.values.length; i++) {
         if (this.getNumCardsByRank(i) === 4) {
           this.cards = this.values[i] || [];
@@ -567,6 +577,7 @@
     }
 
     solve() {
+      var values = getValues(this.game);
       this.resetWildCards();
 
       for (var i = 0; i < this.values.length; i++) {
@@ -629,6 +640,7 @@
     }
 
     solve() {
+      var values = getValues(this.game);
       var cards;
       this.resetWildCards();
 
@@ -716,6 +728,7 @@
     }
 
     solve() {
+      var values = getValues(this.game);
       var cards;
       this.resetWildCards();
 
@@ -809,6 +822,7 @@
     }
 
     solve() {
+      var values = getValues(this.game);
       var card, checkCards;
       this.resetWildCards();
 
@@ -901,6 +915,7 @@
      * @return {Array} Highest potential straight with fewest number of gaps.
      */
     getGaps(checkHandLength) {
+      var values = getValues(this.game);
       var wildCards, cardsToCheck, i, card, gapCards, cardsList, gapCount, prevCard, diff;
 
       var stripReturn = Hand.stripWilds(this.cardPool, this.game);
@@ -910,7 +925,7 @@
       for (i = 0; i < cardsToCheck.length; i++) {
         card = cardsToCheck[i];
         if (card.wildValue === 'A') {
-          cardsToCheck.push(new Card('1' + card.suit));
+          cardsToCheck.push(new Card('1' + card.suit, this.game));
         }
       }
       cardsToCheck = cardsToCheck.sort(Card.sort);
@@ -955,6 +970,7 @@
     }
 
     getWheel() {
+      var values = getValues(this.game);
       var wildCards, cardsToCheck, i, card, wheelCards, wildCount, cardFound;
 
       var stripReturn = Hand.stripWilds(this.cardPool, this.game);
@@ -964,7 +980,7 @@
       for (i = 0; i < cardsToCheck.length; i++) {
         card = cardsToCheck[i];
         if (card.wildValue === 'A') {
-          cardsToCheck.push(new Card('1' + card.suit));
+          cardsToCheck.push(new Card('1' + card.suit, this.game));
         }
       }
       cardsToCheck = cardsToCheck.sort(Card.sort);
@@ -1007,6 +1023,7 @@
     }
 
     solve() {
+      var values = getValues(this.game);
       this.resetWildCards();
       for (var i = 0; i < this.values.length; i++) {
         var cards = this.values[i];
@@ -1064,6 +1081,7 @@
     }
 
     solve() {
+      var values = getValues(this.game);
       this.resetWildCards();
 
       for (var i = 0; i < this.values.length; i++) {
@@ -1102,6 +1120,7 @@
     }
 
     solve() {
+      var values = getValues(this.game);
       this.resetWildCards();
 
       for (var i = 0; i < this.values.length; i++) {
@@ -1183,6 +1202,7 @@
     }
 
     solve() {
+      var values = getValues(this.game);
       this.resetWildCards();
 
       for (var i = 0; i < this.values.length; i++) {
@@ -1245,6 +1265,7 @@
     }
 
     solve() {
+      var values = getValues(this.game);
       this.resetWildCards();
 
       for (var i = 0; i < this.values.length; i++) {
@@ -1286,10 +1307,9 @@
       this.cards = this.cardPool.slice(0, this.game.cardsInHand);
 
       for (var i = 0; i < this.cards.length; i++) {
-        var card = this.cards[i];
         if (this.cards[i].value === this.game.wildValue) {
           this.cards[i].wildValue = 'A';
-          this.cards[i].rank = values.indexOf('A');
+          this.cards[i].rank = getValues(this.game).indexOf('A');
         }
       }
 
@@ -1427,6 +1447,7 @@
      * Set a full hand into high and low hands, according to House Way.
      */
     splitHouseWay() {
+      var values = getValues(this.game);
       var hiCards, loCards;
       var rank = this.game.handValues.length - this.baseHand.rank;
       var handValue = this.game.handValues[rank];
