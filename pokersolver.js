@@ -411,7 +411,13 @@
             nonCards = Hand.stripWilds(nonCards, this.game)[1];
           }
         }
-        var straight = new Straight(possibleStraight, this.game);
+        var straight;
+        if (this.game.descr === 'bigtwo') {
+          straight = new Big2FiveCardHand(possibleStraight, '', this.game);
+          straight.isPossible = straight.inSequence() && straight.sameSuit();
+        } else {
+          straight = new Straight(possibleStraight, this.game);
+        }
         if (straight.isPossible) {
           this.cards = straight.cards;
           this.cards = this.cards.concat(nonCards);
@@ -1385,6 +1391,10 @@
   }
 
   class Big2FiveCardHand extends Hand {
+    constructor(cards, name = 'BigTwo Five Card Hand', game, canDisqualify) {
+      super(cards, name, game, canDisqualify);
+    }
+
     inSequence() {
       var sequence = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K'];
       var numbers = this.cards.map(({ value }) => sequence.indexOf(value)).sort((a, b) => a - b);
@@ -1407,6 +1417,12 @@
       return !!this.cards.reduce((a, b) => {
         return a.suit === b.suit ? a : NaN;
       });
+    }
+
+    solve() {
+      this.cards = this.cardPool.slice(0, this.game.cardsInHand);
+
+      return this.cards.length === 5;
     }
   }
 
@@ -1833,8 +1849,8 @@
     bigtwo: {
       cardsInHand: 5,
       handValues: [StraightFlush, FourOfAKind, FullHouse, Flower, Snake, Triples, Pair, SingleCard],
-      wildValue: 1,
-      wildStatus: 1,
+      wildValue: 0,
+      wildStatus: 0,
       wheelStatus: 0,
       sfQualify: 5,
       lowestQualified: null,
