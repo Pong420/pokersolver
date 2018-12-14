@@ -21,8 +21,11 @@ describe('Single Card', function() {
   return it('should detect the winning hand from a list', function() {
     var h1 = Hand.solve(['2s'], gameForTest);
     var h2 = Hand.solve(['As'], gameForTest);
-    var winners = Hand.winners([h1, h2]);
-    return winners[0].should.equal(h1);
+    var h3 = Hand.solve(['2d'], gameForTest);
+    var winners1 = Hand.winners([h1, h2]);
+    var winners2 = Hand.winners([h3, h1]);
+    winners1[0].should.equal(h1);
+    return winners2[0].should.equal(h1);
   });
 });
 

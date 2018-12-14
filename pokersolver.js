@@ -17,6 +17,8 @@
     }
   }
 
+  var suitRank = ['d', 'c', 'h', 's'];
+
   /**
    * Base Card class that defines a single card.
    */
@@ -25,6 +27,7 @@
       this.value = str.substr(0, 1);
       this.suit = str.substr(1, 1).toLowerCase();
       this.rank = getValues(game).indexOf(this.value);
+      this.suitRank = suitRank.indexOf(this.suit);
       this.wildValue = str.substr(0, 1);
     }
 
@@ -116,20 +119,36 @@
      * @return {Number}
      */
     compare(a) {
-      if (this.rank < a.rank) {
-        return 1;
-      } else if (this.rank > a.rank) {
-        return -1;
+      var game = this.game.descr;
+
+      function compare(a, b) {
+        if (b.rank < a.rank) {
+          return 1;
+        } else if (b.rank > a.rank) {
+          return -1;
+        }
+
+        if (game === 'bigtwo') {
+          if (b.suitRank < a.suitRank) {
+            return 1;
+          } else if (b.suitRank > a.suitRank) {
+            return -1;
+          }
+        }
+
+        return 0;
       }
 
-      var result = 0;
-      for (var i = 0; i <= 4; i++) {
-        if (this.cards[i] && a.cards[i] && this.cards[i].rank < a.cards[i].rank) {
-          result = 1;
-          break;
-        } else if (this.cards[i] && a.cards[i] && this.cards[i].rank > a.cards[i].rank) {
-          result = -1;
-          break;
+      var result = compare(a, this);
+
+      if (result === 0) {
+        for (var i = 0; i <= 4; i++) {
+          if (this.cards[i] && a.cards[i]) {
+            var temp = compare(a.cards[i], this.cards[i]);
+            if (temp !== 0) {
+              return temp;
+            }
+          }
         }
       }
 
