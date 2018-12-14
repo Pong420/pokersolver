@@ -31,8 +31,9 @@
       this.wildValue = str.substr(0, 1);
     }
 
-    toString() {
-      return this.wildValue.replace('T', '10') + this.suit;
+    toString(origin) {
+      var value = origin ? this.value : this.wildValue.replace('T', '10');
+      return value + this.suit;
     }
 
     static sort(a, b) {
@@ -267,9 +268,9 @@
      * Return list of contained cards in human readable format.
      * @return {String}
      */
-    toString() {
+    toString(origin) {
       var cards = this.cards.map(function(c) {
-        return c.toString();
+        return c.toString(origin);
       });
 
       return cards.join(', ');
@@ -279,9 +280,9 @@
      * Return array of contained cards.
      * @return {Array}
      */
-    toArray() {
+    toArray(origin) {
       var cards = this.cards.map(function(c) {
-        return c.toString();
+        return c.toString(origin);
       });
 
       return cards;

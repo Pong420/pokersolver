@@ -288,4 +288,14 @@ describe('A Straight Flush', function() {
   });
 });
 
-// TODO:
+describe('toArray test', function() {
+  it('should be work fine', function() {
+    var h1 = new StraightFlush(['Ad', 'Kd', 'Qd', 'Jd', 'Td'], gameForTest);
+    var h2 = new StraightFlush(['Ad', 'Kd', 'Qd', 'Jd', 'Td'], gameForTest);
+
+    return (
+      ['Ad', 'Kd', 'Qd', 'Jd', 'Td'].should.be.eql(h1.toArray(true)) &&
+      ['Ad', 'Kd', 'Qd', 'Jd', '10d'].should.be.eql(h1.toArray(false))
+    );
+  });
+});
