@@ -809,9 +809,9 @@
         this.descr = this.name + ', ' + type;
       }
 
-      // if (this.game.descr === 'bigtwo') {
-      //   this.cards = this.cards.slice(0, 5);
-      // }
+      if (this.game.descr === 'bigtwo') {
+        this.cards = this.cards.slice(0, 5);
+      }
 
       return this.cards.length >= 5;
     }
