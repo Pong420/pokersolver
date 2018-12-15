@@ -52,14 +52,15 @@ describe('Pair', function() {
 
 describe('Triples', function() {
   it('should be detected as possible', function() {
-    var hand = new Triples(['5h', '5c', '5s'], gameForTest);
-    return hand.isPossible.should.equal(true);
+    var h1 = new Triples(['5h', '5c', '5s'], gameForTest);
+    return h1.isPossible.should.equal(true);
   });
 
   it('should be detected as not possible', function() {
     var h1 = new Triples(['5h', '6s'], gameForTest);
     var h2 = new Triples(['5h', '6s', '7s', '5s'], gameForTest);
-    return h1.isPossible.should.equal(false) && h2.isPossible.should.equal(false);
+    var h3 = new Triples(['5h', '5c', '5s', '6h', '6c', '6s'], gameForTest);
+    return h1.isPossible.should.equal(false) && h2.isPossible.should.equal(false) && h3.isPossible.should.equal(false);
   });
 
   return it('should select the correct winner', function() {
